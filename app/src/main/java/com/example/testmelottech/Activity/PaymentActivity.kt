@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.testmelottech.R
@@ -26,6 +27,20 @@ class PaymentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_payment_phone_pay)
         button = findViewById(R.id.button)
 
+
+
+        button.setOnClickListener {
+            val editTextAmount = findViewById<EditText>(R.id.editTextAmount)
+            val enteredAmount = editTextAmount.text.toString().toDoubleOrNull()
+
+            if (enteredAmount == null || enteredAmount <= 0) {
+                showToast("Please enter a valid amount greater than 100")
+            } else if (enteredAmount < 100) {
+                navigateToFailureScreen()
+            } else {
+                initiatePayment(enteredAmount)
+            }
+        }
 
         PhonePe.init(this)
         var data = JSONObject()
@@ -52,20 +67,34 @@ class PaymentActivity : AppCompatActivity() {
             .setChecksum(checkSum)
             .setUrl(apiEndPoint)
             .build()
+    }
 
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+    /* button.setOnClickListener {
+         try {
+             startActivityForResult(
+                 PhonePe.getImplicitIntent(
+                     this, b2BPGRequest, ""
+                 )!!, B2B_PG_REQUEST_CODE
+             );
+         } catch (e: Exception) {
+             e.printStackTrace()
+             Log.d("TAG", "onCreate:${e.printStackTrace()} ")
+         }
+     }*/
+    private fun navigateToFailureScreen() {
+        val intent = Intent(this, FailureScreenActivity::class.java)
+        startActivity(intent)
+    }
+    private fun initiatePayment(amount: Double?) {
+        navigateToSuccessScreen()
+    }
 
-        button.setOnClickListener {
-            try {
-                startActivityForResult(
-                    PhonePe.getImplicitIntent(
-                        this, b2BPGRequest, ""
-                    )!!, B2B_PG_REQUEST_CODE
-                );
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.d("TAG", "onCreate:${e.printStackTrace()} ")
-            }
-        }
+    private fun navigateToSuccessScreen() {
+        val intent = Intent(this, SuccessScreenActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -86,12 +115,10 @@ class PaymentActivity : AppCompatActivity() {
             }
         }
     }
-
     fun sha256(input: String): String {
         val byte = input.toByteArray(Charsets.UTF_8)
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(byte)
         return digest.fold("") { str, it -> str + "%02x".format(it) }
-
     }
 }
