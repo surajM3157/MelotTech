@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class SplashActivity : AppCompatActivity() {
 
-    private val SPLASH_DELAY: Long = 2000
+    private val SPLASH_DELAY: Long = 1500
     private var auth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,7 @@ class SplashActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        Handler().postDelayed({
+        /*Handler().postDelayed({
             if (auth?.currentUser != null) {
                 val userIntent = Intent(this, UserActivity::class.java)
                 startActivity(userIntent)
@@ -26,6 +26,12 @@ class SplashActivity : AppCompatActivity() {
                 val signUpIntent = Intent(this, SignUpActivity::class.java)
                 startActivity(signUpIntent)
             }
+            finish()
+        }, SPLASH_DELAY)*/
+
+        Handler().postDelayed({
+            val mainIntent = Intent(this, PaymentActivity::class.java)
+            startActivity(mainIntent)
             finish()
         }, SPLASH_DELAY)
     }

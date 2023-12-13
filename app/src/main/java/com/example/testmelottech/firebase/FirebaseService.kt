@@ -10,7 +10,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.example.testmelottech.Activity.UserActivity
+import com.example.testmelottech.Activity.PaymentActivity
 import com.example.testmelottech.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -40,7 +40,7 @@ class FirebaseService : FirebaseMessagingService() {
     override fun onMessageReceived(p0: RemoteMessage) {
         super.onMessageReceived(p0)
 
-        val intent = Intent(this, UserActivity::class.java)
+        val intent = Intent(this, PaymentActivity::class.java)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val notificationId = Random.nextInt()
 
