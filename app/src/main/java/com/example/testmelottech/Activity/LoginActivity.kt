@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             val intent = Intent(
                 this,
-                UserActivity::class.java
+                PaymentActivity::class.java
             )
             startActivity(intent)
             finish()
@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
                             editPassword.setText("")
                             val intent = Intent(
                                 this,
-                                UserActivity::class.java
+                                PaymentActivity::class.java
                             )
                             startActivity(intent)
                             finish()

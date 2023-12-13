@@ -128,7 +128,7 @@ class SignUpActivity : AppCompatActivity() {
                             editEmail.setText("")
                             editPassword.setText("")
                             editConfirmPassword.setText("")
-                            val intent = Intent(this, UserActivity::class.java)
+                            val intent = Intent(this, PaymentActivity::class.java)
                             startActivity(intent)
                             finish()
                         }

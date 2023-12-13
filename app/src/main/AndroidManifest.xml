@@ -25,13 +25,10 @@
             android:name=".Activity.FailureScreenActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.SignUpActivity"
+            android:name=".Activity.PaymentActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.UserActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.LoginActivity"
@@ -40,7 +37,7 @@
             android:name=".Activity.SplashActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.PaymentActivity"
+            android:name=".Activity.SignUpActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,16 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.phonepe.android.sdk.isUAT"
-            android:value="true" />
-        <meta-data
-            android:name="com.phonepe.android.sdk.isSimulator"
-            android:value="true" />
-        <meta-data
-            android:name="com.phonepe.android.sdk.MerchantId"
-            android:value="PGTESTPAYUAT" />
     </application>
 
 </manifest>
