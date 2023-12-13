@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
@@ -17,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestMelotTech"
         tools:targetApi="31">
+        <activity
+            android:name=".Activity.PaymentActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
