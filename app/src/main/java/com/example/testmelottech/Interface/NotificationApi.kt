@@ -1,4 +1,4 @@
 package com.example.testmelottech.Interface
 
-class NotificationApi {
+interface NotificationApi {
 }
