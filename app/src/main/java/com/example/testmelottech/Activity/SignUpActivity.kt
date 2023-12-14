@@ -3,10 +3,9 @@ package com.example.testmelottech.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.testmelottech.R
@@ -19,8 +18,6 @@ class SignUpActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var databaseReference: DatabaseReference
-
-
     private lateinit var editUserId: EditText
     private lateinit var editFullName: EditText
     private lateinit var editPassword: EditText
@@ -34,9 +31,7 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
-
         auth = FirebaseAuth.getInstance()
-
 
         editUserId = findViewById(R.id.editUserId)
         editFullName = findViewById(R.id.editFullName)
@@ -47,40 +42,16 @@ class SignUpActivity : AppCompatActivity() {
         btnSubmit = findViewById(R.id.btnSubmit)
         btnLogin = findViewById(R.id.btnLogin)
 
-
         btnSubmit.setOnClickListener {
             val userName = editFullName.text.toString()
             val email = editEmail.text.toString()
             val password = editPassword.text.toString()
             val confirmPassword = editConfirmPassword.text.toString()
 
-            if (TextUtils.isEmpty(userName)) {
-                Toast.makeText(applicationContext, "username is required", Toast.LENGTH_SHORT)
-                    .show()
+            if (isValidInput(userName, email, password, confirmPassword)) {
+                registerUser(userName, email, password)
             }
-            if (TextUtils.isEmpty(email)) {
-                Toast.makeText(applicationContext, "email is required", Toast.LENGTH_SHORT).show()
-            }
-
-            if (TextUtils.isEmpty(password)) {
-                Toast.makeText(applicationContext, "password is required", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            if (TextUtils.isEmpty(confirmPassword)) {
-                Toast.makeText(
-                    applicationContext,
-                    "confirm password is required",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            if (!password.equals(confirmPassword)) {
-                Toast.makeText(applicationContext, "password not match", Toast.LENGTH_SHORT).show()
-            }
-            registerUser(userName, email, password)
         }
-
         btnLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -88,15 +59,26 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun registerUser(userName: String, email: String, password: String) {
+    private fun isValidInput(
+        userName: String, email: String, password: String, confirmPassword: String
+    ): Boolean {
+        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(
+                confirmPassword
+            )
+        ) {
+            Toast.makeText(applicationContext, "All fields are required", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(applicationContext, "Invalid email format", Toast.LENGTH_SHORT).show()
-            return
+            return false
         }
+
         val phoneNumber = editPhoneNumber.text.toString().trim()
         if (phoneNumber.length < 10 || !phoneNumber.matches("\\d+".toRegex())) {
             Toast.makeText(applicationContext, "Invalid phone number", Toast.LENGTH_SHORT).show()
-            return
+            return false
         }
 
         if (password.length < 6) {
@@ -105,38 +87,48 @@ class SignUpActivity : AppCompatActivity() {
                 "Password must be at least 6 characters long",
                 Toast.LENGTH_SHORT
             ).show()
-            return
+            return false
         }
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val user: FirebaseUser? = auth.currentUser
-                    val userId: String = user!!.uid
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(applicationContext, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
-                    databaseReference =
-                        FirebaseDatabase.getInstance().getReference("Users").child(userId)
+        return true
+    }
 
-                    val hashMap: HashMap<String, String> = HashMap()
-                    hashMap["userId"] = userId
-                    hashMap["userName"] = userName
-                    hashMap["profileImage"] = ""
+    private fun registerUser(userName: String, email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                val user: FirebaseUser? = auth.currentUser
+                val userId: String = user!!.uid
 
-                    databaseReference.setValue(hashMap).addOnCompleteListener(this) { innerTask ->
-                        if (innerTask.isSuccessful) {
-                            editFullName.setText("")
-                            editEmail.setText("")
-                            editPassword.setText("")
-                            editConfirmPassword.setText("")
-                            val intent = Intent(this, PaymentActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
+                databaseReference =
+                    FirebaseDatabase.getInstance().getReference("Users").child(userId)
+
+                val hashMap: HashMap<String, String> = HashMap()
+                hashMap["userId"] = userId
+                hashMap["userName"] = userName
+                hashMap["profileImage"] = ""
+
+                databaseReference.setValue(hashMap).addOnCompleteListener(this) { innerTask ->
+                    if (innerTask.isSuccessful) {
+                        editFullName.setText("")
+                        editEmail.setText("")
+                        editPassword.setText("")
+                        editConfirmPassword.setText("")
+                        val intent = Intent(this, PaymentActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Log.e("Firebase", "Registration failed: ${innerTask.exception}")
                     }
-                } else {
-                    Toast.makeText(applicationContext, "user already exists ", Toast.LENGTH_SHORT)
-                        .show()
                 }
+            } else {
+                Toast.makeText(applicationContext, "User already exists", Toast.LENGTH_SHORT).show()
             }
+
+        }
     }
 }
